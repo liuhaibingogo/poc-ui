@@ -151,13 +151,27 @@ export const dynamicRoutes = [
     permissions: ['tool:gen:edit'],
     children: [
       {
-        path: 'index/:tableId(\\d+)',
+        path: 'index/:toolId(\\d+)',
         component: () => import('@/views/tool/gen/editTable'),
         name: 'GenEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
-  }
+  },
+  {
+    path: '/tool/tool-buyList',
+    component: Layout,
+    hidden: true,
+    permissions: ["system:product:list"],
+    children: [
+      {
+        path: 'index/:buyListId(\\d+)',
+        component: () => import('@/views/tool/product/buyList'),
+        name: 'ToolBuyList',
+        meta: { title: '新增BuyList', activeMenu: '/tool/product' }
+      }
+    ]
+  },
 ]
 
 const router = createRouter({

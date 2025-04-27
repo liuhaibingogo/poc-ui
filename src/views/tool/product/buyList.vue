@@ -1,27 +1,30 @@
 <template>
   <div class="container">
-    <h2>📋 采购清单管理</h2>
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <h2>📋BuyList</h2>
 
-    </el-form>
     <div class="actions">
+      <el-select v-model="buyListParams" placeholder="请选择BuyList" clearable>
+        <el-option label="BuyListA" value="BuyListA"></el-option>
+        <el-option label="BuyListB" value="BuyListB"></el-option>
+        <el-option label="BuyListC" value="BuyListC"></el-option>
+      </el-select>
       <input type="file" @change="onFileChange" accept=".xlsx,.xls" />
-      <el-button type="primary" @click="exportExcel">导出 Excel</el-button>
-      <el-button type="success" @click="addRow">添加行</el-button>
+      <el-button type="primary" @click="exportExcel">Download</el-button>
+      <el-button type="success" @click="addRow">addRow</el-button>
     </div>
 
     <el-table :data="buyListData" style="width: 100%" border>
       <!-- 隐藏 ID 列（保留在数据中） -->
-      <el-table-column prop="assetType" label="资产类型">
+      <el-table-column prop="assetType" label="assetType">
         <template #default="scope"><el-input v-model="scope.row.assetType" /></template>
       </el-table-column>
-      <el-table-column prop="productCode" label="产品编号">
+      <el-table-column prop="productCode" label="productCode">
         <template #default="scope"><el-input v-model="scope.row.productCode" /></template>
       </el-table-column>
-      <el-table-column prop="MAKER" label="制造商">
+      <el-table-column prop="MAKER" label="MAKER">
         <template #default="scope"><el-input v-model="scope.row.MAKER" /></template>
       </el-table-column>
-      <el-table-column prop="modDatetime" label="修改时间">
+      <el-table-column prop="modDatetime" label="modDatetime">
         <template #default="scope">
           <el-date-picker
               v-model="scope.row.modDatetime"
@@ -33,10 +36,10 @@
           />
         </template>
       </el-table-column>
-      <el-table-column prop="CHECKER" label="检查员">
+      <el-table-column prop="CHECKER" label="CHECKER">
         <template #default="scope"><el-input v-model="scope.row.CHECKER" /></template>
       </el-table-column>
-      <el-table-column prop="chckerDatetime" label="检查时间">
+      <el-table-column prop="chckerDatetime" label="chckerDatetime">
         <template #default="scope">
           <el-date-picker
               v-model="scope.row.chckerDatetime"
@@ -48,14 +51,14 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="150">
-        <template #default="scope">
-          <el-button @click="deleteRow(scope.$index)" type="danger" size="small">删除</el-button>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="操作" width="150">-->
+<!--        <template #default="scope">-->
+<!--          <el-button @click="deleteRow(scope.$index)" type="danger" size="small">删除</el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
-    <el-button @click="saveData(scope.$index)" type="warning" size="small">保存</el-button>
-
+    <el-button @click="saveData()" type="warning" :disabled="!buyListData" size="small">Save</el-button>
+    <el-button @click="reset" type="warning" size="small">Cancel</el-button>
   </div>
 </template>
 
@@ -86,6 +89,19 @@ const addRow = () => {
   })
 }
 
+const reset = () => {
+  buyListData.value.pop({
+    id: null,
+    assetType: '',
+    productCode: '',
+    MAKER: '',
+    modDatetime: '',
+    CHECKER: '',
+    chckerDatetime: '',
+    status: newRowStatus.value
+  })
+}
+
 const deleteRow = async (index) => {
   const item = buyListData.value[index]
   if (item.id) {
@@ -93,21 +109,28 @@ const deleteRow = async (index) => {
   }
   buyListData.value.splice(index, 1)
 }
-
-const saveData = async (index) => {
-  const item = buyListData.value[index]
-  try {
-    if (item.id) {
-      await axios.put(`/api/buylist/${item.id}`, item)
-    } else {
-      const res = await axios.post('/system/buyList/save', item)
-      item.id = res.data.id
-    }
-    ElMessage.success('保存成功')
-  } catch {
-    ElMessage.error('保存失败')
+const saveData = async () => {
+  if (buyListData.value.length === 0) {
+    alert("请先上传文件！");
+    return;
   }
-}
+
+  try {
+    const response = await axios.post('http://localhost:8080/system/product/save', {
+      // headers: { 'Authorization': 'Bearer your-token' },
+      data: buyListData.value,
+    });
+    alert(`上传成功！共 ${buyListData.value.length} 条数据`);
+    console.log("后端返回:", response.data);
+
+    // 清空数据
+    buyListData.value = [];
+    // if (fileInput.value) fileInput.value.value = ''; // 清空文件输入框
+  } catch (error) {
+    alert(`上传失败: ${error.message}`);
+    console.error("Error:", error);
+  }
+};
 
 const onFileChange = (e) => {
   const file = e.target.files[0]
