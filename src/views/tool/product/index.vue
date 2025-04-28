@@ -48,29 +48,29 @@
 
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="ID" />
-      <el-table-column label="buyList" align="center" prop="buyList" >
-      <template #default="scope">
-        <router-link :to="'/system/buy_List/index/' + scope.row.ID+scope.row.buyListID" class="link-type">
-        </router-link>
-      </template>
+      <el-table-column label="Buy List ID" align="center" prop="id" />
+      <el-table-column label="Buy List Name" align="center" :show-overflow-tooltip="true">
+        <template #default="scope">
+          <router-link :to="'/tool/tool-buyList/index/'+ scope.row.id" class="link-type">
+            <span>{{ scope.row.buyList }}</span>
+          </router-link>
+        </template>
       </el-table-column>
-      <el-table-column v-if="showColumn" label="buyListID" align="center" prop="buyListID" />
       <el-table-column label="status" align="center" prop="status">
         <template #default="scope">
           <dict-tag :options="buy_list_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="MAKER" align="center" prop="MAKER" />
-      <el-table-column label="modDatetime" align="center" prop="modDatetime" width="180">
+      <el-table-column label="MAKER" align="center" prop="maker" />
+      <el-table-column label="Last Mod DateTime" align="center" prop="modDatetime" width="180">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.modDatetime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.modDatetime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="CHECKER" align="center" prop="CHECKER" />
-      <el-table-column label="chckerDatetime" align="center" prop="chckerDatetime" width="180">
+      <el-table-column label="CHECKER" align="center" prop="checker" />
+      <el-table-column label="Last check DateTime" align="center" prop="chckerDatetime" width="180">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.chckerDatetime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.chckerDatetime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -196,10 +196,8 @@ const ids = ref([]);
 const checkedBuyList = ref([]);
 const single = ref(true);
 const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const showColumn=ref(false);
 
+const total = ref(0);
 const data = reactive({
   form: {},
   queryParams: {

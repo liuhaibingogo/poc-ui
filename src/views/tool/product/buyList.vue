@@ -67,12 +67,18 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import * as XLSX from 'xlsx'
 import { ElMessage } from 'element-plus'
+import {getToken} from "@/utils/auth.js";
 
 const buyListData = ref([])
 const newRowStatus = ref(0)
 
 onMounted(async () => {
-  const res = await axios.get('/api/buylist')
+  const id=buyListData.value.buyListId;
+
+  const res = await axios.get('http://localhost:8080/system/product/buylist',{
+    headers: { 'Authorization': getToken() },
+    data:id
+});
   buyListData.value = res.data
 })
 
@@ -117,7 +123,7 @@ const saveData = async () => {
 
   try {
     const response = await axios.post('http://localhost:8080/system/product/save', {
-      // headers: { 'Authorization': 'Bearer your-token' },
+      headers: { 'Authorization': getToken() },
       data: buyListData.value,
     });
     alert(`上传成功！共 ${buyListData.value.length} 条数据`);
