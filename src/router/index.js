@@ -165,7 +165,7 @@ export const dynamicRoutes = [
     permissions: ["system:product:list"],
     children: [
       {
-        path: 'index/:buyListId(\\d+)',
+        path: 'index/:productId(\\d+)',
         component: () => import('@/views/tool/product/buyList'),
         name: 'ToolBuyList',
         meta: { title: '新增BuyList', activeMenu: '/tool/product' }

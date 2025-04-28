@@ -51,7 +51,7 @@
       <el-table-column label="Buy List ID" align="center" prop="id" />
       <el-table-column label="Buy List Name" align="center" :show-overflow-tooltip="true">
         <template #default="scope">
-          <router-link :to="'/tool/tool-buyList/index/'+ scope.row.id" class="link-type">
+          <router-link :to="'/tool/tool-buyList/index/2'" class="link-type">
             <span>{{ scope.row.buyList }}</span>
           </router-link>
         </template>
@@ -264,8 +264,7 @@ function handleSelectionChange(selection) {
 /** 新增按钮操作 */
 const handleAdd = (row) => {
   // 打开一个新窗口，指向你的子页面路由
-  const ID = 1;
-  router.push({ path: "/tool/tool-buyList/index/" + ID});
+  router.push({ path: "/tool/tool-buyList/index/1"});
 }
 /** 提交按钮 */
 function submitForm() {

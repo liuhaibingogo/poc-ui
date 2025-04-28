@@ -15,6 +15,12 @@
 
     <el-table :data="buyListData" style="width: 100%" border>
       <!-- 隐藏 ID 列（保留在数据中） -->
+      <el-table-column prop="id" label="id" v-if="showColunm">
+        <template #default="scope"><el-input v-model="scope.row.id" /></template>
+      </el-table-column>
+      <el-table-column prop="productId" label="productId" v-if="showColunm">
+        <template #default="scope"><el-input v-model="scope.row.productId" /></template>
+      </el-table-column>
       <el-table-column prop="assetType" label="assetType">
         <template #default="scope"><el-input v-model="scope.row.assetType" /></template>
       </el-table-column>
@@ -71,13 +77,14 @@ import {getToken} from "@/utils/auth.js";
 
 const buyListData = ref([])
 const newRowStatus = ref(0)
+const showColunm=ref(false);
 
 onMounted(async () => {
-  const id=buyListData.value.buyListId;
+  const prductId=buyListData.value.prductId;
 
   const res = await axios.get('http://localhost:8080/system/product/buylist',{
     headers: { 'Authorization': getToken() },
-    data:id
+    data:prductId
 });
   buyListData.value = res.data
 })
