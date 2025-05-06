@@ -1,13 +1,13 @@
 <template>
   <div class="container">
-    <h2>📋BuyList</h2>
+    <h2>📋{{title}}</h2>
 
     <div class="actions">
-      <el-select v-model="buyListParams" placeholder="请选择BuyList" clearable>
-        <el-option label="BuyListA" value="BuyListA"></el-option>
-        <el-option label="BuyListB" value="BuyListB"></el-option>
-        <el-option label="BuyListC" value="BuyListC"></el-option>
-      </el-select>
+<!--      <el-select v-model="buyListParams" placeholder="请选择BuyList" clearable>-->
+<!--        <el-option label="Buy List A" value="BuyListA"></el-option>-->
+<!--        <el-option label="Buy List B" value="BuyListB"></el-option>-->
+<!--        <el-option label="Buy List C" value="BuyListC"></el-option>-->
+<!--      </el-select>-->
       <input type="file" @change="onFileChange" accept=".xlsx,.xls" />
       <el-button type="primary" @click="exportExcel">Download</el-button>
       <el-button type="success" @click="addRow">addRow</el-button>
@@ -15,6 +15,9 @@
 
     <el-table :data="buyListData" style="width: 100%" border>
       <!-- 隐藏 ID 列（保留在数据中） -->
+      <el-table-column prop="id" label="id" v-if="showColunm">
+        <template #default="scope"><el-input v-model="scope.row.id" /></template>
+      </el-table-column>
       <el-table-column prop="id" label="id" v-if="showColunm">
         <template #default="scope"><el-input v-model="scope.row.id" /></template>
       </el-table-column>
@@ -27,8 +30,11 @@
       <el-table-column prop="productCode" label="productCode">
         <template #default="scope"><el-input v-model="scope.row.productCode" /></template>
       </el-table-column>
-      <el-table-column prop="MAKER" label="MAKER">
-        <template #default="scope"><el-input v-model="scope.row.MAKER" /></template>
+      <el-table-column prop="status" label="status" v-if="showColunm">
+        <template #default="scope"><el-input v-model="scope.row.status" /></template>
+      </el-table-column>
+      <el-table-column prop="MAKER" label="maker">
+        <template #default="scope"><el-input v-model="scope.row.maker" /></template>
       </el-table-column>
       <el-table-column prop="modDatetime" label="modDatetime">
         <template #default="scope">
@@ -42,8 +48,8 @@
           />
         </template>
       </el-table-column>
-      <el-table-column prop="CHECKER" label="CHECKER">
-        <template #default="scope"><el-input v-model="scope.row.CHECKER" /></template>
+      <el-table-column prop="CHECKER" label="checker">
+        <template #default="scope"><el-input v-model="scope.row.checker" /></template>
       </el-table-column>
       <el-table-column prop="chckerDatetime" label="chckerDatetime">
         <template #default="scope">
@@ -74,24 +80,28 @@ import axios from 'axios'
 import * as XLSX from 'xlsx'
 import { ElMessage } from 'element-plus'
 import {getToken} from "@/utils/auth.js";
+import { useRoute } from 'vue-router';
+import {listProduct} from "@/api/system/product.js";
 
 const buyListData = ref([])
 const newRowStatus = ref(0)
 const showColunm=ref(false);
+const route = useRoute();
+const title=route.query.title;
+
 
 onMounted(async () => {
-  const prductId=buyListData.value.prductId;
-
-  const res = await axios.get('http://localhost:8080/system/product/buylist',{
-    headers: { 'Authorization': getToken() },
-    data:prductId
-});
-  buyListData.value = res.data
+  const prduct_Id = route.query.param1;
+  const res = await axios.get('http://localhost:8080/system/product/buylist?productId='+prduct_Id,{
+    headers: { 'Authorization': getToken() }
+  });
+  buyListData.value = res.data.rows;
 })
 
 const addRow = () => {
   buyListData.value.push({
     id: null,
+    productId: '',
     assetType: '',
     productCode: '',
     MAKER: '',
@@ -129,10 +139,12 @@ const saveData = async () => {
   }
 
   try {
-    const response = await axios.post('http://localhost:8080/system/product/save', {
-      headers: { 'Authorization': getToken() },
-      data: buyListData.value,
-    });
+    const response = await axios.post(
+        'http://localhost:8080/system/product/save',
+        buyListData.value,
+        {
+          headers: { 'Authorization': getToken() }
+        });
     alert(`上传成功！共 ${buyListData.value.length} 条数据`);
     console.log("后端返回:", response.data);
 

@@ -168,7 +168,7 @@ export const dynamicRoutes = [
         path: 'index/:productId(\\d+)',
         component: () => import('@/views/tool/product/buyList'),
         name: 'ToolBuyList',
-        meta: { title: '新增BuyList', activeMenu: '/tool/product' }
+        meta: { title: 'BuyList', activeMenu: '/tool/product' }
       }
     ]
   },

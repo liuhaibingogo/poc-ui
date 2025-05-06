@@ -51,7 +51,7 @@
       <el-table-column label="Buy List ID" align="center" prop="id" />
       <el-table-column label="Buy List Name" align="center" :show-overflow-tooltip="true">
         <template #default="scope">
-          <router-link :to="'/tool/tool-buyList/index/2'" class="link-type">
+          <router-link :to="{path:'/tool/tool-buyList/index/2',query:{param1:scope.row.id,title:scope.row.buyList}}" class="link-type">
             <span>{{ scope.row.buyList }}</span>
           </router-link>
         </template>
@@ -182,6 +182,7 @@
 
 <script setup name="Product">
 import { listProduct, getProduct, delProduct, addProduct, updateProduct } from "@/api/system/product";
+import {useRouter} from "vue-router";
 
 const { proxy } = getCurrentInstance();
 const { buy_list_status } = proxy.useDict('buy_list_status');
